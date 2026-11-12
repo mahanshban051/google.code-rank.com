@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CodeRank — Assessment Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f7fa;--surface:#fff;--ink:#151922;--muted:#788293;--line:#e7ebf1;--blue:#2868e8;--blue2:#eaf1ff;--green:#169b72;--amber:#c48624;--shadow:0 8px 28px #1d2b4210;color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0b1019;--surface:#111a28;--ink:#edf3fb;--muted:#98a6ba;--line:#263449;--blue:#78aaff;--blue2:#1b2d49;--shadow:0 8px 28px #0003}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Arial,sans-serif;transition:background .25s,color .25s}
+.demo-tag{position:fixed;z-index:10;top:13px;right:-37px;transform:rotate(38deg);background:#fff1d6;color:#865600;border:1px solid #f0d49d;padding:6px 46px;font-size:9px;font-weight:800;letter-spacing:1.3px;box-shadow:0 4px 12px #0001}
+.shell{max-width:1440px;margin:auto;min-height:100vh;display:grid;grid-template-columns:245px 1fr;background:var(--surface);box-shadow:0 0 50px #18263d0a;transition:background .25s}
+.sidebar{background:var(--surface);border-right:1px solid var(--line);padding:24px 16px;display:flex;flex-direction:column;min-height:100vh;transition:background .25s,border-color .25s}
+.brand-area{padding:2px 8px 25px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.brand-logo{display:flex;align-items:center;gap:10px;font:800 20px 'JetBrains Mono';color:var(--blue);letter-spacing:1px}
+.brand-logo .dot{width:10px;height:10px;border-radius:50%;background:var(--blue)}
+.brand-caption{font-size:9px;color:#9aa3b1;margin-top:8px;letter-spacing:1.5px}
+.nav-title{font-size:9px;color:#a1a9b5;font-weight:800;letter-spacing:1.4px;padding:12px 11px 8px}
+.nav a{display:flex;align-items:center;gap:12px;padding:11px 12px;margin:3px 0;color:#667184;text-decoration:none;border-radius:8px;font-size:12px;font-weight:600;transition:background .15s,color .15s}
+.nav a span{width:18px;text-align:center;font-size:15px}
+.nav a:hover,.nav a.active{background:var(--blue2);color:var(--blue)}
+.side-foot{margin-top:auto;border-top:1px solid var(--line);padding:17px 8px 0;color:#9aa3b1;font-size:9px;line-height:1.8}
+main{padding:30px 36px 45px;min-width:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px;gap:14px;flex-wrap:wrap}
+.header-brand{display:flex;align-items:center;gap:18px;min-width:0}
+.header-logo{display:inline-flex;align-items:center;text-decoration:none;flex-shrink:0}
+.header-logo svg{display:block;width:150px;height:auto;max-height:42px}
+.google-logo{width:74px;height:24px;object-fit:contain;flex-shrink:0}
+:root[data-theme="dark"] .google-logo{filter:brightness(0) invert(1)}
+.crumb{font-size:11px;color:#9aa3b1;white-space:nowrap}
+.crumb b{color:var(--ink);opacity:.75}
+.top-right{display:flex;align-items:center;gap:17px;flex-wrap:wrap}
+.top-icon{height:34px;width:34px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--muted);cursor:pointer;display:grid;place-items:center;font-size:14px;transition:border-color .15s,color .15s}
+.top-icon:hover{border-color:var(--blue);color:var(--blue)}
+.theme-toggle{height:34px;min-width:36px;padding:0 10px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font-size:14px;cursor:pointer}
+.theme-toggle:hover{border-color:var(--blue)}
+.user{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:700;cursor:pointer;text-decoration:none;color:var(--ink);border-radius:9px;padding:4px 6px;transition:background .15s}
+.user:hover{background:var(--blue2)}
+.avatar{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--blue2);color:var(--blue);font-weight:800}
+.user small{display:block;font-size:9px;color:#9aa3b1;font-weight:500;margin-top:3px}
+.title-row{display:flex;justify-content:space-between;align-items:end;margin-bottom:23px;gap:12px;flex-wrap:wrap}
+.overline{font:700 9px 'JetBrains Mono';letter-spacing:1.7px;color:var(--blue)}
+h1{font-size:25px;letter-spacing:-.7px;margin:7px 0 5px}
+.subtitle{font-size:11px;color:var(--muted);margin:0}
+.period{border:1px solid var(--line);border-radius:8px;padding:9px 12px;color:var(--muted);font-size:10px;background:var(--surface);cursor:pointer}
+.grid{display:grid;gap:14px}
+.stats{grid-template-columns:repeat(4,1fr);margin-bottom:15px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);transition:background .25s,border-color .25s}
+.stat{padding:17px 18px}
+.stat-head{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:10px;font-weight:600}
+.stat-icon{width:29px;height:29px;border-radius:8px;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-size:14px}
+.stat strong{display:block;font:700 25px 'JetBrains Mono';margin:12px 0 5px;letter-spacing:-1px}
+.stat-foot{font-size:9px;color:#98a1ae}
+.positive{color:var(--green);font-weight:700}
+.two-col{grid-template-columns:1.45fr .9fr;margin-bottom:15px}
+.card-pad{padding:18px 19px}
+.card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px}
+.card-head h2{font-size:12px;margin:0;font-weight:700}
+.card-head p{font-size:9px;color:#9aa3b1;margin:5px 0 0}
+.tag{font-size:9px;color:var(--blue);background:var(--blue2);border:1px solid var(--blue2);border-radius:20px;padding:5px 9px;white-space:nowrap}
+.chart{height:205px}
+.chart svg{width:100%;height:100%;overflow:visible}
+.gridline{stroke:var(--line);stroke-width:1}
+.axis{fill:#a0a8b4;font:9px Inter}
+.line{fill:none;stroke:var(--blue);stroke-width:2.7;stroke-linecap:round;stroke-linejoin:round}
+.fill{fill:url(#fill)}
+.dot{fill:var(--surface);stroke:var(--blue);stroke-width:2.5}
+.score-flex{display:flex;align-items:center;justify-content:center;gap:22px;padding:7px 0 14px;flex-wrap:wrap}
+.donut{width:135px;height:135px;position:relative;flex-shrink:0}
+.donut svg{width:100%;height:100%;transform:rotate(-90deg)}
+.donut circle{fill:none;stroke-width:9}
+.donut .base{stroke:var(--line)}
+.donut .value{stroke:var(--blue);stroke-linecap:round;stroke-dasharray:339.3;stroke-dashoffset:27}
+.donut-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.donut-center b{font:700 27px 'JetBrains Mono'}
+.donut-center small{font-size:8px;color:#9aa3b1;margin-top:3px}
+.score-copy b{font-size:13px}
+.score-copy p{font-size:9px;line-height:1.8;color:var(--muted);max-width:155px}
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto}
+.metric{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px}
+.metric span{display:block;font-size:8px;color:var(--muted)}
+.metric b{display:block;font:600 13px 'JetBrains Mono';margin-top:5px}
+.lower{grid-template-columns:1.3fr .9fr}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;white-space:nowrap}
+th{text-align:left;color:#9aa3b1;font-size:8px;letter-spacing:.5px;font-weight:700;padding:10px 8px;border-bottom:1px solid var(--line)}
+td{font-size:10px;color:var(--muted);padding:11px 8px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+.rank{font:700 10px 'JetBrains Mono';color:#8b96a6}
+.rank.top{color:#b17b1d}
+.person{display:flex;align-items:center;gap:8px}
+.person-avatar{width:27px;height:27px;border-radius:8px;background:var(--bg);display:grid;place-items:center;font-size:9px;font-weight:700;color:var(--muted)}
+.person b{font-size:10px;color:var(--ink);opacity:.85}
+.person small{display:block;color:#a0a8b4;font-size:8px;margin-top:3px}
+.highlight{background:var(--blue2)}
+.highlight td{color:var(--blue)}
+.highlight .person-avatar{background:var(--blue);color:#fff}
+.status{font-size:8px;padding:4px 7px;border-radius:20px;background:#eaf7f1;color:#16835f}
+:root[data-theme="dark"] .status{background:#15372e;color:#7de0b8}
+.skill{margin:15px 0}
+.skill-head{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:7px}
+.skill-head b{font:600 9px 'JetBrains Mono';color:var(--blue)}
+.bar{height:5px;border-radius:10px;background:var(--line);overflow:hidden}
+.bar i{height:100%;display:block;border-radius:10px;background:linear-gradient(90deg,var(--blue),#70a4ff);width:0;transition:width 1s ease}
+.activity{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.activity:last-child{border:0}
+.activity-icon{width:27px;height:27px;display:grid;place-items:center;background:var(--blue2);color:var(--blue);border-radius:8px;flex-shrink:0}
+.activity b{display:block;font-size:9px}
+.activity small{display:block;font-size:8px;color:#9aa3b1;margin-top:4px}
+.certificate-strip{margin-top:15px;padding:17px 19px;display:flex;justify-content:space-between;align-items:center;gap:15px;background:var(--bg);border:1px solid var(--line);border-radius:12px;flex-wrap:wrap}
+.cert-info{display:flex;align-items:center;gap:12px}
+.cert-symbol{width:40px;height:40px;border-radius:10px;background:var(--blue2);color:var(--blue);display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.cert-info b{font-size:11px}
+.cert-info p{font-size:9px;color:var(--muted);margin:4px 0 0}
+.btn{border:1px solid var(--blue2);background:var(--surface);color:var(--blue);border-radius:8px;padding:9px 13px;font-size:9px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block;transition:background .15s,border-color .15s}
+.btn:hover{background:var(--blue2);border-color:var(--blue)}
+.notice{margin-top:14px;padding:10px 13px;border:1px solid #f0dfb8;background:#fffaf0;color:#8a6828;border-radius:8px;font-size:9px;line-height:1.7}
+:root[data-theme="dark"] .notice{background:#2b2416;border-color:#66502a;color:#e5c783}
+footer{text-align:center;color:#a6aeba;font-size:8px;letter-spacing:1px;margin-top:23px}
+.modal{position:fixed;inset:0;background:#152033a8;backdrop-filter:blur(5px);display:none;place-items:center;padding:20px;z-index:30}
+.modal.open{display:grid}
+.modal-box{width:min(760px,100%);background:var(--surface);padding:14px;border-radius:10px;box-shadow:0 25px 90px #0003;position:relative}
+.close{position:absolute;top:22px;right:22px;border:0;background:var(--bg);color:var(--ink);border-radius:7px;padding:7px 10px;z-index:2;cursor:pointer}
+.cert-image{width:100%;border-radius:8px;display:block;border:1px solid var(--line)}
+.cert-meta-row{display:flex;justify-content:space-between;gap:10px;font-size:9px;color:var(--muted);padding:12px 4px 2px;flex-wrap:wrap}
+@media(max-width:1000px){.shell{grid-template-columns:205px 1fr}.stats{grid-template-columns:repeat(2,1fr)}.two-col,.lower{grid-template-columns:1fr}}
+@media(max-width:680px){.shell{display:block}.sidebar{min-height:auto;padding:13px 14px;border-right:0;border-bottom:1px solid var(--line)}.brand-area{padding:0 0 10px;margin:0 0 8px}.nav-title,.side-foot{display:none}.nav{display:flex;overflow:auto;gap:3px}.nav a{white-space:nowrap;padding:8px 10px;font-size:9px}.nav a span{display:none}main{padding:20px 13px 35px}.topbar{margin-bottom:22px;align-items:flex-start}.header-brand{gap:10px;flex-direction:column;align-items:flex-start}.header-logo svg{width:130px;max-height:36px}.google-logo{width:60px;height:20px}.title-row{align-items:flex-start;flex-direction:column;gap:10px}.period{display:none}h1{font-size:21px}.stats{gap:9px}.stat{padding:13px}.stat strong{font-size:21px}.card-pad{padding:14px}.certificate-strip{align-items:flex-start;flex-direction:column}.btn{width:100%;text-align:center}.demo-tag{top:9px;right:-45px;font-size:8px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<div class="shell">
+<aside class="sidebar">
+  <div class="brand-area">
+    <div class="brand-logo"><span class="dot"></span>CodeRank</div>
+    <div class="brand-caption">ASSESSMENT &amp; SKILLS ANALYTICS</div>
+  </div>
+  <div class="nav-title">WORKSPACE</div>
+  <nav class="nav">
+    <a class="active" href="#overview"><span>▦</span>Overview</a>
+    <a href="#analytics"><span>◷</span>Analytics</a>
+    <a href="#leaderboard"><span>♜</span>Leaderboard</a>
+    <a href="#skills"><span>⌘</span>Skills profile</a>
+    <a href="#certificate"><span>♧</span>Certificate</a>
+  </nav>
+  <div class="nav-title">REPORTS</div>
+  <nav class="nav">
+    <a href="#activity"><span>▤</span>Activity log</a>
+    <a href="#about"><span>ⓘ</span>About this demo</a>
+  </nav>
+  <div class="side-foot">CODERANK CONCEPT<br>Assessment dashboard UI · Demo data</div>
+</aside>
+<main id="overview">
+  <div class="topbar">
+    <div class="header-brand">
+      <a href="#overview" class="header-logo" aria-label="CodeRank home">
+        <svg viewBox="0 0 220 46" role="img" aria-label="CodeRank logo" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="7" width="32" height="32" rx="9" fill="var(--blue)"/>
+          <path d="M14 20 L9 23 L14 26 M22 20 L27 23 L22 26 M19 18 L17 28" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="44" y="30" font-family="'JetBrains Mono',monospace" font-size="21" font-weight="700" fill="var(--ink)" letter-spacing="0.5">Code<tspan fill="var(--blue)">Rank</tspan></text>
+        </svg>
+      </a>
+      <img class="google-logo" src="https://www.gstatic.com/images/branding/googlelogo/svg/googlelogo_light_clr_74x24px.svg" alt="Google" loading="lazy">
+      <div class="crumb">Workspace&nbsp; / &nbsp;<b>Assessment overview</b></div>
+    </div>
+    <div class="top-right">
+      <button class="theme-toggle" id="themeToggle" type="button" title="Toggle appearance" aria-label="Toggle appearance">◐</button>
+      <button class="top-icon" id="notifBtn" title="Notifications" aria-label="Notifications">♧</button>
+      <button class="top-icon" id="settingsBtn" title="Settings" aria-label="Settings">⚙</button>
+      <a class="user" href="https://myaccount.google.com/" target="_blank" rel="noopener" title="Open Google Account settings">
+        <div class="avatar">MS</div>
+        <div>Mahan Shaban<small>Completed</small></div>
+      </a>
+    </div>
+  </div>
+  <div class="title-row">
+    <div>
+      <div class="overline">ASSESSMENT OVERVIEW / 2026</div>
+      <h1>Programming assessment</h1>
+      <p class="subtitle">A detailed overview of your sample assessment performance.</p>
+    </div>
+    <div class="period">◷ &nbsp; Autumn 2026 &nbsp; · &nbsp; Demo dataset</div>
+  </div>
+  <section class="grid stats">
+    <div class="card stat"><div class="stat-head"><span>Overall score</span><span class="stat-icon">✧</span></div><strong>94.8<span style="font-size:12px;color:#9aa3b1"> / 100</span></strong><div class="stat-foot"><span class="positive">↑ 8.4%</span> vs. sample average</div></div>
+    <div class="card stat"><div class="stat-head"><span>Leaderboard position</span><span class="stat-icon">♜</span></div><strong>#07</strong><div class="stat-foot">Out of 2,480 sample entries</div></div>
+    <div class="card stat"><div class="stat-head"><span>Answer accuracy</span><span class="stat-icon">✓</span></div><strong>96.2<span style="font-size:12px;color:#9aa3b1">%</span></strong><div class="stat-foot">Calculated from demo responses</div></div>
+    <div class="card stat"><div class="stat-head"><span>Time spent</span><span class="stat-icon">◷</span></div><strong>02:41<span style="font-size:12px;color:#9aa3b1">h</span></strong><div class="stat-foot">Sample completion duration</div></div>
+  </section>
+  <section class="grid two-col" id="analytics">
+    <div class="card card-pad">
+      <div class="card-head">
+        <div><h2>Performance trend</h2><p>Score progression across assessment sections</p></div>
+        <select id="chartMode" class="period" onchange="changeChart()"><option value="score">Score</option><option value="accuracy">Accuracy</option></select>
+      </div>
+      <div class="chart">
+        <svg viewBox="0 0 680 220" preserveAspectRatio="none">
+          <defs><linearGradient id="fill" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#3978ed" stop-opacity=".2"/><stop offset="1" stop-color="#3978ed" stop-opacity="0"/></linearGradient></defs>
+          <line class="gridline" x1="45" y1="25" x2="665" y2="25"/><line class="gridline" x1="45" y1="75" x2="665" y2="75"/><line class="gridline" x1="45" y1="125" x2="665" y2="125"/><line class="gridline" x1="45" y1="175" x2="665" y2="175"/>
+          <text class="axis" x="8" y="29">100</text><text class="axis" x="15" y="79">75</text><text class="axis" x="15" y="129">50</text><text class="axis" x="15" y="179">25</text>
+          <path class="fill" id="chartArea" d="M45 75 L148 65 L251 82 L354 48 L457 57 L560 33 L665 35 L665 190 L45 190 Z"/>
+          <path class="line" id="chartPath" d="M45 75 L148 65 L251 82 L354 48 L457 57 L560 33 L665 35"/>
+          <g id="chartDots"><circle class="dot" cx="45" cy="75" r="5"/><circle class="dot" cx="148" cy="65" r="5"/><circle class="dot" cx="251" cy="82" r="5"/><circle class="dot" cx="354" cy="48" r="5"/><circle class="dot" cx="457" cy="57" r="5"/><circle class="dot" cx="560" cy="33" r="5"/><circle class="dot" cx="665" cy="35" r="5"/></g>
+          <text class="axis" x="45" y="210">Section 01</text><text class="axis" x="148" y="210">Section 02</text><text class="axis" x="251" y="210">Section 03</text><text class="axis" x="354" y="210">Section 04</text><text class="axis" x="457" y="210">Section 05</text><text class="axis" x="560" y="210">Section 06</text><text class="axis" x="665" y="210">Section 07</text>
+        </svg>
+      </div>
+    </div>
+    <div class="card card-pad">
+      <div class="card-head"><div><h2>Performance index</h2><p>Visual summary · demo values</p></div><span class="tag">ADVANCED</span></div>
+      <div class="score-flex">
+        <div class="donut"><svg viewBox="0 0 120 120"><circle class="base" cx="60" cy="60" r="54"/><circle class="value" cx="60" cy="60" r="54"/></svg><div class="donut-center"><b>92%</b><small>DEMO INDEX</small></div></div>
+        <div class="score-copy"><b>Strong performance</b><p>This sample score illustrates how assessment insights can be presented in a candidate dashboard.</p></div>
+      </div>
+      <div class="metrics"><div class="metric"><span>Problem solving</span><b>92 / 100</b></div><div class="metric"><span>Analysis speed</span><b>86 / 100</b></div></div>
+    </div>
+  </section>
+  <section class="grid lower">
+    <div class="card card-pad" id="leaderboard">
+      <div class="card-head"><div><h2>Leaderboard</h2><p>Illustrative candidate ranking · fictional entries</p></div><span class="tag">TOP 10</span></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>RANK</th><th>CANDIDATE</th><th>EMAIL</th><th>SCORE</th><th>LEVEL</th><th>STATUS</th></tr></thead>
+          <tbody>
+            <tr><td class="rank top">01</td><td><div class="person"><div class="person-avatar">JW</div><div><b>James Wilson</b><small>CR-DEMO-2048</small></div></div></td><td>ja****@gmail.com</td><td>98.6</td><td>Expert</td><td><span class="status">Completed</span></td></tr>
+            <tr><td class="rank top">02</td><td><div class="person"><div class="person-avatar">SM</div><div><b>Sophia Miller</b><small>CR-DEMO-1932</small></div></div></td><td>so****@gmail.com</td><td>97.9</td><td>Expert</td><td><span class="status">Completed</span></td></tr>
+            <tr><td class="rank">03</td><td><div class="person"><div class="person-avatar">OL</div><div><b>Oliver Lee</b><small>CR-DEMO-1881</small></div></div></td><td>ol****@gmail.com</td><td>96.4</td><td>Advanced</td><td><span class="status">Completed</span></td></tr>
+            <tr><td class="rank">04</td><td><div class="person"><div class="person-avatar">EC</div><div><b>Emma Clark</b><small>CR-DEMO-1750</small></div></div></td><td>em****@gmail.com</td><td>95.7</td><td>Advanced</td><td><span class="status">Completed</span></td></tr>
+            <tr><td class="rank">05</td><td><div class="person"><div class="person-avatar">NB</div><div><b>Noah Bennett</b><small>CR-DEMO-1629</small></div></div></td><td>no****@gmail.com</td><td>95.1</td><td>Advanced</td><td><span class="status">Completed</span></td></tr>
+            <tr><td class="rank">06</td><td><div class="person"><div class="person-avatar">AL</div><div><b>Ava Lewis</b><small>CR-DEMO-1514</small></div></div></td><td>av****@gmail.com</td><td>94.9</td><td>Advanced</td><td><span class="status">Completed</span></td></tr>
+            <tr class="highlight"><td class="rank top">07</td><td><div class="person"><div class="person-avatar">MS</div><div><b>Mahan Shaban</b><small>CR-DEMO-0007</small></div></div></td><td>ma****@gmail.com</td><td><b>94.8</b></td><td>Advanced</td><td><span class="status">Completed</span></td></tr>
+            <tr><td class="rank">08</td><td><div class="person"><div class="person-avatar">IR</div><div><b>Isabella Reed</b><small>CR-DEMO-1438</small></div></div></td><td>is****@gmail.com</td><td>93.7</td><td>Advanced</td><td><span class="status">Completed</span></td></tr>
+            <tr><td class="rank">09</td><td><div class="person"><div class="person-avatar">LH</div><div><b>Lucas Hayes</b><small>CR-DEMO-1391</small></div></div></td><td>lu****@gmail.com</td><td>92.8</td><td>Intermediate</td><td><span class="status">Completed</span></td></tr>
+            <tr><td class="rank">10</td><td><div class="person"><div class="person-avatar">MC</div><div><b>Mia Collins</b><small>CR-DEMO-1274</small></div></div></td><td>mi****@gmail.com</td><td>91.9</td><td>Intermediate</td><td><span class="status">Completed</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card card-pad" id="skills">
+      <div class="card-head"><div><h2>Skills breakdown</h2><p>Sample score by technical domain</p></div><span class="overline">SKILLS</span></div>
+      <div class="skill"><div class="skill-head"><span>JavaScript</span><b>96%</b></div><div class="bar"><i data-width="96"></i></div></div>
+      <div class="skill"><div class="skill-head"><span>HTML &amp; CSS</span><b>98%</b></div><div class="bar"><i data-width="98"></i></div></div>
+      <div class="skill"><div class="skill-head"><span>Algorithms &amp; Logic</span><b>91%</b></div><div class="bar"><i data-width="91"></i></div></div>
+      <div class="skill"><div class="skill-head"><span>Data Structures</span><b>88%</b></div><div class="bar"><i data-width="88"></i></div></div>
+      <div class="skill"><div class="skill-head"><span>Debugging</span><b>93%</b></div><div class="bar"><i data-width="93"></i></div></div>
+    </div>
+  </section>
+  <section class="grid two-col" style="margin-top:15px">
+    <div class="card card-pad" id="activity">
+      <div class="card-head"><div><h2>Recent activity</h2><p>Events shown in this demo interface</p></div><span class="overline">ACTIVITY LOG</span></div>
+      <div class="activity"><div class="activity-icon">✓</div><div><b>Algorithm section completed</b><small>Sample score: 92 / 100 · Demo event</small></div></div>
+      <div class="activity"><div class="activity-icon">⌘</div><div><b>JavaScript code analysis</b><small>5 exercises in this category · Demo event</small></div></div>
+      <div class="activity"><div class="activity-icon">◷</div><div><b>Performance report generated</b><small>Locally defined sample data</small></div></div>
+    </div>
+    <div class="card card-pad" id="certificate">
+      <div class="card-head"><div><h2>Certificate preview</h2><p>Sample visual certificate · not an official credential</p></div><span style="color:#bd913b">✧</span></div>
+      <div class="certificate-strip" style="padding:0;border:0;background:transparent;margin:0">
+        <div class="cert-info"><div class="cert-symbol">♧</div><div><b>CodeRank achievement</b><p>Open the designed certificate preview.</p></div></div>
+        <button class="btn" onclick="openCert()">View certificate →</button>
+      </div>
+    </div>
+  </section>
+  <div class="certificate-strip" id="about">
+    <div class="cert-info"><div class="cert-symbol">ⓘ</div><div><b>About this interface</b><p>CodeRank is an independent UI concept. All names, scores, rankings and credentials shown here are fictional demo data.</p></div></div>
+    <a class="btn" href="#overview">Back to top ↑</a>
+  </div>
+  <footer>CODERANK UI CONCEPT &nbsp; · &nbsp; DEMO DATA ONLY &nbsp; · &nbsp; NOT AN OFFICIAL ASSESSMENT</footer>
+</main>
+</div>
+<div class="modal" id="certModal" onclick="if(event.target===this)closeCert()">
+  <div class="modal-box">
+    <button class="close" onclick="closeCert()">Close ✕</button>
+    <img class="cert-image" src="CodeRank Programmer Certificate.png" alt="Demo certificate image">
+  </div>
+</div>
+<script>
+// Chart
+function changeChart(){
+  const mode=document.getElementById('chartMode').value;
+  const vals=mode==='score'?[75,65,82,48,57,33,35]:[37,47,40,31,28,22,19];
+  const d='M'+vals.map((v,i)=>`${45+i*103.33} ${25+v*1.5}`).join(' L');
+  document.getElementById('chartPath').setAttribute('d',d);
+  document.getElementById('chartArea').setAttribute('d',d+' L665 190 L45 190 Z');
+  document.getElementById('chartDots').innerHTML=vals.map((v,i)=>`<circle class="dot" cx="${45+i*103.33}" cy="${25+v*1.5}" r="5"/>`).join('');
+}
+
+// Certificate modal
+function openCert(){document.getElementById('certModal').classList.add('open')}
+function closeCert(){document.getElementById('certModal').classList.remove('open')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCert()});
+
+// Notifications + Settings
+document.getElementById('notifBtn')?.addEventListener('click',()=>{
+  alert('🔔 Demo notifications\n\n• Assessment completed\n• Certificate ready to preview\n• 3 new leaderboard updates\n\n(This is a UI demo — no real notifications.)');
+});
+document.getElementById('settingsBtn')?.addEventListener('click',()=>{
+  alert('⚙ Demo settings\n\nTheme follows your system automatically.\nUse the ◐ button to override.\n\nOpening Google Account settings is available via the profile link.');
+});
+
+// Animate skill bars
+window.addEventListener('load',()=>{
+  document.querySelectorAll('.bar i').forEach(el=>{
+    const w=el.getAttribute('data-width')||'0';
+    requestAnimationFrame(()=>{el.style.width=w+'%'});
+  });
+});
+
+// Theme system + manual override
+const themeMedia=window.matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(theme){if(theme==='system'){document.documentElement.removeAttribute('data-theme')}else{document.documentElement.setAttribute('data-theme',theme)}}
+let manualTheme=null;
+function syncSystemTheme(){if(!manualTheme)applyTheme('system')}
+themeMedia.addEventListener?.('change',syncSystemTheme);
+document.getElementById('themeToggle')?.addEventListener('click',()=>{
+  const currentlyDark=manualTheme ? manualTheme==='dark' : themeMedia.matches;
+  manualTheme=currentlyDark?'light':'dark';
+  applyTheme(manualTheme);
+  document.getElementById('themeToggle').textContent=manualTheme==='dark'?'☀':'☾';
+  document.getElementById('themeToggle').title='Manual '+manualTheme+' mode · click to switch';
+});
+applyTheme('system');
+</script>
+</body>
+</html>
